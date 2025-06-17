@@ -1,0 +1,14 @@
+# .gitignore
+__pycache__/
+*.pyc
+*.log
+.env
+.env.*
+.vscode/
+.idea/
+.alembic/
+postgres_data/
+*.sqlite3
+*.db
+dist/
+node_modules/

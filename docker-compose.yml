@@ -1,0 +1,29 @@
+
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: balabolka-backend
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/app
+    restart: always
+
+  db:
+    image: postgres:16
+    container_name: balabolka-db
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
+
+volumes:
+  postgres_data:
