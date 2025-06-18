@@ -6,6 +6,8 @@ services:
     container_name: balabolka-backend
     env_file:
       - .env
+    environment:
+      - PYTHONUNBUFFERED=1      
     ports:
       - "8000:8000"
     depends_on:

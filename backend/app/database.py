@@ -11,12 +11,15 @@ class Base(DeclarativeBase):
 
 # Движок и сессия только если используем asyncpg
 # Это защищает Alembic от падения при sync-режиме
-if settings.DATABASE_URL.startswith("postgresql+asyncpg"):
-    engine = create_async_engine(settings.DATABASE_URL, echo=True)
-    SessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False)
-else:
-    engine = None
-    SessionLocal = None
+#if settings.DATABASE_URL.startswith("postgresql+asyncpg"):
+#    engine = create_async_engine(settings.DATABASE_URL, echo=True)
+#    SessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False)
+#else:
+#    engine = None
+#    SessionLocal = None
+# ✅ Только async-режим, без условий
+engine = create_async_engine(settings.DATABASE_URL, echo=True)
+SessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False)
 
 # Импорты для регистрации моделей в metadata (важно для Alembic)
 from app.models import user, dialog, phrase, user_phrase, phrase_word, payment

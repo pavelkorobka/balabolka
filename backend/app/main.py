@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import user, dialog, phrase, progress, payment
+from app.routers import user, dialog, phrase, progress, payment, dialog_upload
 
 app = FastAPI(title="Balabolka API", version="1.0.0")
 
@@ -12,6 +12,7 @@ app.include_router(dialog.router)
 app.include_router(phrase.router)
 app.include_router(progress.router)
 app.include_router(payment.router)
+app.include_router(dialog_upload.router)
 
 # Разрешим CORS (при необходимости фронтенда)
 app.add_middleware(

@@ -12,3 +12,4 @@ postgres_data/
 *.db
 dist/
 node_modules/
+frontend/public/assets/dialogs/
