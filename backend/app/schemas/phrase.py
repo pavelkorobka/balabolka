@@ -11,3 +11,10 @@ class PhraseOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class ReviewRequest(BaseModel):
+    phrase_id: int
+    rating: str  # 'forgot', 'hard', 'medium', 'easy'
+
+class ReviewResponse(BaseModel):
+    next_review_at: Optional[str]
