@@ -23,7 +23,17 @@ async def get_current_user(
     # 🔧 Временно возвращаем пользователя напрямую
     user = await user_crud.get_by_telegram_id(db, telegram_id=FAKE_USER_ID)
     if not user:
-        raise HTTPException(status_code=401, detail="User not found")
+        # {{
+        from app.schemas.user import UserCreate
+        user = await user_crud.create_user(db, UserCreate(
+            telegram_id=FAKE_USER_ID,
+            username="test",
+            first_name="Test",
+            last_name="",
+            language_code="ua"
+        ))
+        #raise HTTPException(status_code=401, detail="User not found")
+        # }}
     return UserOut.model_validate(user)
 
     # ✅ В боевом режиме — вот так:
