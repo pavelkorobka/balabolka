@@ -1,18 +1,50 @@
-import { tg } from '../telegram.js';
+// frontend/js/screens/welcome.js
 
-export function showWelcomeScreen(container) {
-  const title = document.createElement('h1');
-  title.textContent = 'Добро пожаловать в Balabolka';
+import { AppState } from '../app.js';
+import { hideBackButton } from '../telegram.js';
+import { getCurrentUser, createUser } from '../api.js';
+import { loadScreen } from './router.js';
+import { t } from '../i18n.js';
 
-  const description = document.createElement('p');
-  description.textContent = 'Изучай английский с помощью живых диалогов и повторений.';
+export function showScreen() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <section class="screen welcome-screen">
+      <h1>${t('welcome.title')}</h1>
+      <p>${t('welcome.subtitle')}</p>
+      <button id="start-btn" class="primary-button">${t('welcome.start')}</button>
+    </section>
+  `;
 
-  tg.MainButton.setText('Начать');
-  tg.MainButton.show();
-  tg.MainButton.onClick(() => {
-    window.showScreen('home');
+  hideBackButton();
+
+  document.getElementById('start-btn').addEventListener('click', async () => {
+    try {
+      let user;
+      try {
+        user = await getCurrentUser();
+      } catch {
+        const tgUser = window.Telegram.WebApp.initDataUnsafe?.user || {
+          id: 123456789,
+          username: 'mock_user',
+          first_name: 'Mock',
+          language_code: 'ru',
+        };
+        user = await createUser({
+          telegram_id: tgUser.id,
+          username: tgUser.username,
+          first_name: tgUser.first_name,
+          language_code: tgUser.language_code?.startsWith('uk') ? 'ua' : 'ru',
+        });
+      }
+
+      AppState.user = user;
+      AppState.language = user.language_code;
+
+      loadScreen('home');
+    } catch (err) {
+      alert('Ошибка при входе. Попробуйте позже.');
+      console.error(err);
+    }
   });
-
-  container.appendChild(title);
-  container.appendChild(description);
 }

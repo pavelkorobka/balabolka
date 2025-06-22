@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from app.models.dialog import Dialog
 from app.models.phrase import Phrase
 from app.models.phrase_word import PhraseWord
@@ -7,9 +7,19 @@ from app.schemas.dialog_upload import DialogUpload
 from app.utils.text import tokenize
 
 async def upload_dialog(db: AsyncSession, payload: DialogUpload):
-    existing = await db.execute(select(Dialog).where(Dialog.title == payload.title))
-    if existing.scalar_one_or_none():
-        return None  # конфликт по title
+    existing_dialog = await db.execute(select(Dialog).where(Dialog.title == payload.title))
+    existing_dialog = existing_dialog.scalar_one_or_none()
+    if existing_dialog:
+        await db.delete(existing_dialog)
+        await db.execute(
+            delete(PhraseWord).where(
+                PhraseWord.phrase_id.in_(
+                    select(Phrase.id).where(Phrase.dialog_id == existing_dialog.id)
+                )
+            )
+        )
+        await db.execute(delete(Phrase).where(Phrase.dialog_id == existing_dialog.id))
+        await db.flush()
 
     dialog = Dialog(
         title=payload.title,

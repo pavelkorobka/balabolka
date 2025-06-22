@@ -3,7 +3,7 @@ from sqlalchemy import select, func
 from app.models.dialog import Dialog
 from app.models.phrase import Phrase
 from app.models.user_phrase import UserPhrase
-from app.schemas.dialog import DialogOut
+from app.schemas.dialog import DialogOutList, DialogOutDetail
 
 async def get_all_dialogs(db: AsyncSession, user_id: int):
     dialogs = (await db.execute(select(Dialog))).scalars().all()
@@ -19,7 +19,7 @@ async def get_all_dialogs(db: AsyncSession, user_id: int):
             select(func.count()).select_from(UserPhrase).where(UserPhrase.user_id == user_id)
         ) > 0
 
-        result.append(DialogOut(
+        result.append(DialogOutList(
             id=dialog.id,
             title=dialog.title,
             description=dialog.description,
@@ -39,16 +39,17 @@ async def get_dialog_with_phrases(db: AsyncSession, dialog_id: int, user_id: int
         select(Phrase).where(Phrase.dialog_id == dialog_id).order_by(Phrase.order)
     )).scalars().all()
 
-    out = DialogOut(
+    out = DialogOutDetail(
         id=dialog.id,
         title=dialog.title,
         description=dialog.description,
         is_free=dialog.is_free,
         video_url=dialog.video_url,
         is_unlocked=True,
-        progress=None
+        progress=None,
+        phrases=phrases
     )
-    out.phrases = phrases  # ручное присвоение, поле не в схеме, но фронту нужно
+    #out.phrases = phrases  # ручное присвоение, поле не в схеме, но фронту нужно
     return out
 
 async def get_dialog_video_url(db: AsyncSession, dialog_id: int):

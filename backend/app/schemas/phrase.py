@@ -5,7 +5,8 @@ class PhraseOut(BaseModel):
     id: int
     order: int
     text_original: str
-    text_translation: Optional[str]
+    text_translation_ru: Optional[str]
+    text_translation_ua: Optional[str]
     image_url: Optional[str]
     audio_url: Optional[str]
 

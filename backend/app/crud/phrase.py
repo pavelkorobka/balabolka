@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
 from app.models.user_phrase import UserPhrase
 from app.models.phrase import Phrase
 from app.schemas.phrase import PhraseOut

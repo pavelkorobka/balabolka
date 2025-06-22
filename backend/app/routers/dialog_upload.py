@@ -13,6 +13,4 @@ async def get_db():
 @router.post("/upload")
 async def upload_dialog_endpoint(payload: DialogUpload, db: AsyncSession = Depends(get_db)):
     dialog_id = await upload_dialog(db, payload)
-    if dialog_id is None:
-        raise HTTPException(status_code=409, detail="Dialog already exists")
     return {"success": True, "dialog_id": dialog_id}

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from app.database import SessionLocal
-from app.schemas.dialog import DialogOut
+from app.schemas.dialog import DialogOutDetail, DialogOutList
 from app.schemas.phrase import PhraseOut
 from app.crud import dialog as dialog_crud
 from app.crud import phrase as phrase_crud
@@ -17,7 +17,7 @@ async def get_db():
         yield session
 
 # GET /api/dialogs
-@router.get("/", response_model=List[DialogOut])
+@router.get("/", response_model=List[DialogOutList])
 async def get_dialogs(
     db: AsyncSession = Depends(get_db),
     current_user: UserOut = Depends(get_current_user)
@@ -25,7 +25,7 @@ async def get_dialogs(
     return await dialog_crud.get_all_dialogs(db, user_id=current_user.id)
 
 # GET /api/dialogs/{dialog_id}
-@router.get("/{dialog_id}", response_model=DialogOut)
+@router.get("/{dialog_id}", response_model=DialogOutDetail)
 async def get_dialog_with_phrases(
     dialog_id: int,
     db: AsyncSession = Depends(get_db),
