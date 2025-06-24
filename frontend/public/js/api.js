@@ -101,6 +101,9 @@ export async function sendReview(phraseId, rating) {
     rating,
   });
 }
+export async function markPhraseAsLearned(phraseId) {
+  return request('POST', '/phrases/learn', { phrase_id: phraseId });
+}
 
 export async function getProgressSummary() {
   return request('GET', '/progress/summary');

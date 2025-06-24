@@ -1,11 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
+from pydantic import BaseModel
 from app.database import SessionLocal
 from app.schemas.phrase import PhraseOut, ReviewRequest, ReviewResponse
 from app.schemas.user import UserOut
 from app.deps import get_current_user
 from app.crud import phrase as phrase_crud
+from app.crud import user_phrase as user_phrase_crud
 from app.spaced_repetition import process_review
 
 router = APIRouter(prefix="/api/phrases", tags=["phrases"])
@@ -37,3 +39,18 @@ async def review_phrase(
         rating=review.rating
     )
     return {"next_review_at": next_time}
+
+
+# POST /api/phrases/learn
+class LearnRequest(BaseModel):
+    phrase_id: int
+
+@router.post("/learn")
+async def learn_phrase(
+    data: LearnRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: UserOut = Depends(get_current_user)
+):
+    await user_phrase_crud.mark_phrase_as_learned(db, current_user.id, data.phrase_id)
+    return {"success": True}
+

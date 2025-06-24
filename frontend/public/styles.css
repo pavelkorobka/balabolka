@@ -9,3 +9,20 @@
   cursor: pointer;
   margin-top: 20px;
 }
+
+.learned {
+  opacity: 0.5;
+  position: relative;
+}
+
+.learned::after {
+  content: "✓ изучено";
+  position: absolute;
+  bottom: 4px;
+  right: 8px;
+  font-size: 0.8em;
+  color: green;
+  background: white;
+  border-radius: 4px;
+  padding: 2px 6px;
+}

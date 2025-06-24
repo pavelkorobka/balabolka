@@ -8,6 +8,7 @@ from app.crud import dialog as dialog_crud
 from app.crud import phrase as phrase_crud
 from app.deps import get_current_user
 from app.schemas.user import UserOut
+from app.crud.user_phrase import get_learned_phrase_ids
 
 router = APIRouter(prefix="/api/dialogs", tags=["dialogs"])
 
@@ -34,6 +35,10 @@ async def get_dialog_with_phrases(
     dialog = await dialog_crud.get_dialog_with_phrases(db, dialog_id, current_user.id)
     if not dialog:
         raise HTTPException(status_code=404, detail="Dialog not found")
+    if dialog and dialog.phrases:
+        learned_ids = await get_learned_phrase_ids(db, current_user.id, dialog.id)
+        for phrase in dialog.phrases:
+            phrase.is_learned = phrase.id in learned_ids
     return dialog
 
 # GET /api/dialogs/{dialog_id}/bonus

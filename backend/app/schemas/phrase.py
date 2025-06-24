@@ -9,6 +9,7 @@ class PhraseOut(BaseModel):
     text_translation_ua: Optional[str]
     image_url: Optional[str]
     audio_url: Optional[str]
+    is_learned: Optional[bool] = None
 
     class Config:
         from_attributes = True

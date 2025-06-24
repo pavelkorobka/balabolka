@@ -1,5 +1,5 @@
 import { AppState } from '../app.js';
-import { getDialog } from '../api.js';
+import { getDialog, markPhraseAsLearned } from '../api.js';
 import { loadScreen } from './router.js';
 import { setBackButton } from '../telegram.js';
 import { t } from '../i18n.js';
@@ -22,7 +22,10 @@ export async function showScreen() {
 
     const data = await getDialog(dialogId);
     phrases = data.phrases;
-    current = 0;
+
+    // Найти первую невыученную фразу
+    current = phrases.findIndex(phrase => !phrase.is_learned);
+    if (current === -1) current = 0;
 
     if (!phrases.length) {
       app.innerHTML = `<p>${t('dialog.empty')}</p>`;
@@ -45,12 +48,15 @@ function renderCurrentPhrase(title) {
   const translation =
     userLang === 'ua' ? phrase.text_translation_ua : phrase.text_translation_ru;
 
+  // Подсчёт выученных фраз
+  const learnedCount = phrases.filter(p => p.is_learned).length;
+
   app.innerHTML = `
     <section class="screen dialog-screen">
       <h2>${title}</h2>
-      <p>${t('dialog.progress')} ${current + 1} / ${phrases.length}</p>
+      <p>${t('dialog.progress')} ${current + 1} / ${phrases.length} (${t('dialog.learned')}: ${learnedCount})</p>
 
-      <img src="/assets/${phrase.image_url}" class="dialog-image" />
+      <img src="/assets/${phrase.image_url}" class="dialog-image${phrase.is_learned ? ' learned' : ''}" />
 
       <button id="play-audio">${t('dialog.listen')}</button>
       <button id="show-original">${t('dialog.show_original')}</button>
@@ -89,7 +95,15 @@ function renderCurrentPhrase(title) {
   });
 
   if (current < phrases.length - 1) {
-    document.getElementById('next-btn').addEventListener('click', () => {
+    document.getElementById('next-btn').addEventListener('click', async () => {
+      if (!phrase.is_learned) {
+        try {
+          await markPhraseAsLearned(phrase.id);
+          phrase.is_learned = true;
+        } catch (err) {
+          console.error('Failed to mark phrase as learned:', err);
+        }
+      }
       current++;
       renderCurrentPhrase(title);
     });
