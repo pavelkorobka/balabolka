@@ -1,28 +1,207 @@
-.primary-button {
-  background-color: var(--button-color, #2ea6ff);
-  color: var(--button-text-color, #fff);
-  padding: 12px 20px;
-  border: none;
-  border-radius: 10px;
-  font-size: 16px;
+
+
+/* Reset & Base */
+:root {
+  --color-bg: #ffffff;
+  --color-text: #000000;
+  --color-primary: #2ea6ff;
+  --color-border: #e0e0e0;
+  --color-muted: #666666;
+  --font-main: 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-main);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* App structure */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.screen-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Screens */
+.screen {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.screen__content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.screen__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Typography */
+.heading {
   font-weight: 600;
+  margin: 0;
+}
+.heading--xl {
+  font-size: 24px;
+}
+.heading--lg {
+  font-size: 20px;
+}
+.heading--md {
+  font-size: 18px;
+}
+.paragraph {
+  margin: 0;
+  font-size: 16px;
+}
+.paragraph--subtitle {
+  font-size: 16px;
+  color: var(--color-muted);
+}
+.paragraph--meta {
+  font-size: 14px;
+  color: var(--color-muted);
+}
+
+/* Buttons */
+.button {
+  padding: 10px 16px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text);
   cursor: pointer;
-  margin-top: 20px;
+}
+.button--primary {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+.button--secondary {
+  border: 1px solid var(--color-border);
+}
+.button--audio,
+.button--next,
+.button--finish,
+.button--rate {
+  width: 100%;
+}
+.button-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.learned {
-  opacity: 0.5;
-  position: relative;
-}
-
-.learned::after {
-  content: "✓ изучено";
-  position: absolute;
-  bottom: 4px;
-  right: 8px;
-  font-size: 0.8em;
-  color: green;
-  background: white;
+/* Forms */
+.input, .select {
+  font-size: 16px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
-  padding: 2px 6px;
+  width: 100%;
+}
+.label {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+/* Media */
+.image {
+  width: 100%;
+  max-width: 100%;
+  border-radius: 6px;
+}
+.image--phrase {
+  max-height: 200px;
+  object-fit: cover;
+}
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+/* Layout helpers */
+.content--centered {
+  align-items: center;
+  text-align: center;
+}
+.actions {
+  display: flex;
+  gap: 8px;
+}
+.actions--inline {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+/* Lists & data */
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.stat {
+  font-size: 14px;
+  color: var(--color-muted);
+}
+.dialog-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.dialog-list li {
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  margin-bottom: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Phrases */
+.phrase-text {
+  font-size: 16px;
+}
+.phrase-text--original {
+  color: var(--color-muted);
+}
+.phrase-text--translation {
+  font-weight: bold;
+}
+
+/* Ratings */
+.ratings {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Utility */
+.error {
+  color: red;
+  font-size: 14px;
+}
+.empty, .done {
+  font-size: 16px;
+  color: var(--color-muted);
+  text-align: center;
 }

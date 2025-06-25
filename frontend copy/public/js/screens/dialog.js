@@ -3,14 +3,13 @@ import { getDialog, markPhraseAsLearned } from '../api.js';
 import { loadScreen } from './router.js';
 import { setBackButton } from '../telegram.js';
 import { t } from '../i18n.js';
-import { loadScreenTemplate } from '../utils/templates.js';
 
 let phrases = [];
 let current = 0;
 
 export async function showScreen() {
   const app = document.getElementById('app');
-  await loadScreenTemplate('dialog', app);
+  app.innerHTML = `<p>${t('dialog.loading')}</p>`;
 
   setBackButton(() => loadScreen('home'));
 
@@ -35,7 +34,7 @@ export async function showScreen() {
 
     renderCurrentPhrase(data.title);
   } catch (err) {
-    app.innerHTML = `<p class="error">Ошибка загрузки диалога</p>`;
+    app.innerHTML = `<p>Ошибка загрузки диалога</p>`;
     console.error(err);
   }
 }
@@ -44,25 +43,37 @@ function renderCurrentPhrase(title) {
   const app = document.getElementById('app');
   const phrase = phrases[current];
 
+  // Локализованный перевод по языку
   const userLang = AppState.language || 'ru';
   const translation =
     userLang === 'ua' ? phrase.text_translation_ua : phrase.text_translation_ru;
 
+  // Подсчёт выученных фраз
   const learnedCount = phrases.filter(p => p.is_learned).length;
 
-  document.getElementById('dialog-title').textContent = title;
-  document.getElementById('dialog-progress').textContent = `${t('dialog.progress')} ${current + 1} / ${phrases.length} (${t('dialog.learned')}: ${learnedCount})`;
+  app.innerHTML = `
+    <section class="screen dialog-screen">
+      <h2>${title}</h2>
+      <p>${t('dialog.progress')} ${current + 1} / ${phrases.length} (${t('dialog.learned')}: ${learnedCount})</p>
 
-  const imageEl = document.getElementById('dialog-image');
-  imageEl.src = `/assets/${phrase.image_url}`;
-  imageEl.className = 'dialog-image' + (phrase.is_learned ? ' learned' : '');
+      <img src="/assets/${phrase.image_url}" class="dialog-image${phrase.is_learned ? ' learned' : ''}" />
 
-  const originalEl = document.getElementById('original');
-  const translationEl = document.getElementById('translation');
-  originalEl.style.display = 'none';
-  translationEl.style.display = 'none';
-  originalEl.textContent = '';
-  translationEl.textContent = '';
+      <button id="play-audio">${t('dialog.listen')}</button>
+      <button id="show-original">${t('dialog.show_original')}</button>
+      <button id="show-translation">${t('dialog.show_translation')}</button>
+      <p id="original" style="display:none;"></p>
+      <p id="translation" style="display:none; font-weight: bold;"></p>
+
+      <div class="dialog-controls">
+        ${
+          current < phrases.length - 1
+            ? `<button id="next-btn">${t('dialog.next')}</button>`
+            : `<button id="finish-btn">${t('dialog.finish')}</button>`
+        }
+        <button id="back-btn">${t('dialog.back')}</button>
+      </div>
+    </section>
+  `;
 
   document.getElementById('play-audio').addEventListener('click', () => {
     const audio = new Audio(`/assets/${phrase.audio_url}`);
@@ -70,27 +81,21 @@ function renderCurrentPhrase(title) {
   });
 
   document.getElementById('show-translation').addEventListener('click', () => {
-    translationEl.textContent = translation;
-    translationEl.style.display = 'block';
+    document.getElementById('translation').textContent = translation;
+    document.getElementById('translation').style.display = 'block';
   });
 
   document.getElementById('show-original').addEventListener('click', () => {
-    originalEl.textContent = phrase.text_original;
-    originalEl.style.display = 'block';
+    document.getElementById('original').textContent = phrase.text_original;
+    document.getElementById('original').style.display = 'block';
   });
 
   document.getElementById('back-btn').addEventListener('click', () => {
     loadScreen('home');
   });
 
-  const nextBtn = document.getElementById('next-btn');
-  const finishBtn = document.getElementById('finish-btn');
-  nextBtn.style.display = 'none';
-  finishBtn.style.display = 'none';
-
   if (current < phrases.length - 1) {
-    nextBtn.style.display = 'inline-block';
-    nextBtn.onclick = async () => {
+    document.getElementById('next-btn').addEventListener('click', async () => {
       if (!phrase.is_learned) {
         try {
           await markPhraseAsLearned(phrase.id);
@@ -101,11 +106,10 @@ function renderCurrentPhrase(title) {
       }
       current++;
       renderCurrentPhrase(title);
-    };
+    });
   } else {
-    finishBtn.style.display = 'inline-block';
-    finishBtn.onclick = () => {
+    document.getElementById('finish-btn').addEventListener('click', () => {
       loadScreen('dialog_bonus');
-    };
+    });
   }
 }

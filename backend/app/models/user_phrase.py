@@ -7,6 +7,7 @@ class UserPhrase(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     phrase_id = Column(Integer, ForeignKey("phrases.id", ondelete="CASCADE"))
+    interval = Column(Integer, default=1)
     next_review_at = Column(TIMESTAMP)
     repetition_count = Column(Integer, default=0)
     last_rating = Column(Text)

@@ -8,7 +8,7 @@ from alembic import context
 
 # --- Загрузка переменных из .env ---
 load_dotenv(dotenv_path=Path(__file__).resolve().parent.parent / ".env")
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
+SQLALCHEMY_DATABASE_URL = os.getenv("ALEMBIC_DATABASE_URL")
 
 # --- Alembic Config ---
 config = context.config

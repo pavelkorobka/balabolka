@@ -1,12 +1,20 @@
+// frontend/js/screens/welcome.js
+
 import { AppState } from '../app.js';
 import { hideBackButton } from '../telegram.js';
 import { getCurrentUser, createUser } from '../api.js';
 import { loadScreen } from './router.js';
-import { loadScreenTemplate } from '../utils/templates.js';
+import { t } from '../i18n.js';
 
-export async function showScreen() {
+export function showScreen() {
   const app = document.getElementById('app');
-  await loadScreenTemplate('welcome', app); // шаблон вставляется в DOM
+  app.innerHTML = `
+    <section class="screen welcome-screen">
+      <h1>${t('welcome.title')}</h1>
+      <p>${t('welcome.subtitle')}</p>
+      <button id="start-btn" class="primary-button">${t('welcome.start')}</button>
+    </section>
+  `;
 
   hideBackButton();
 
@@ -16,7 +24,7 @@ export async function showScreen() {
       try {
         user = await getCurrentUser();
       } catch {
-        /*const tgUser = window.Telegram.WebApp.initDataUnsafe?.user || {
+        const tgUser = window.Telegram.WebApp.initDataUnsafe?.user || {
           id: 123456789,
           username: 'mock_user',
           first_name: 'Mock',
@@ -27,7 +35,7 @@ export async function showScreen() {
           username: tgUser.username,
           first_name: tgUser.first_name,
           language_code: tgUser.language_code?.startsWith('uk') ? 'ua' : 'ru',
-        });*/
+        });
       }
 
       AppState.user = user;

@@ -40,10 +40,11 @@ async def mark_phrase_as_learned(db: AsyncSession, user_id: int, phrase_id: int)
     entry = UserPhrase(
         user_id=user_id,
         phrase_id=phrase_id,
+        interval=1,
         repetition_count=0,
         last_rating=None,
         last_review_at=None,
-        next_review_at=now + timedelta(minutes=10)
+        next_review_at=now
     )
     db.add(entry)
     await db.commit()
